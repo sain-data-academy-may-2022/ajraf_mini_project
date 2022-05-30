@@ -4,3 +4,4 @@ Coke Cola
 Sprite
 Irn Bru
 Dr Pepper
+Appletiser
