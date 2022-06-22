@@ -1,0 +1,51 @@
+CREATE TABLE `books` (
+  `book_id` int NOT NULL AUTO_INCREMENT,
+  `book_name` varchar(255) NOT NULL,
+  `book_price` float(10,2) NOT NULL,
+  `book_quantity` int NOT NULL,
+  `book_oos` varchar(255) NOT NULL,
+  PRIMARY KEY (`book_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `couriers` (
+  `courier_id` int NOT NULL AUTO_INCREMENT,
+  `courier_name` varchar(255) NOT NULL,
+  `courier_phone` varchar(20) NOT NULL,
+  `courier_company` varchar(255) NOT NULL,
+  PRIMARY KEY (`courier_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `customer_order` (
+  `order_id` int NOT NULL,
+  `book_name` varchar(255) NOT NULL,
+  `book_quantity` int NOT NULL,
+  `locked_price` float(10,2) NOT NULL,
+  `total_price` float(10,2) NOT NULL,
+  KEY `order_id` (`order_id`),
+  CONSTRAINT `customer_order_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `customers` (
+  `customer_id` int NOT NULL AUTO_INCREMENT,
+  `customer_name` varchar(255) NOT NULL,
+  `customer_address` varchar(255) NOT NULL,
+  `customer_phone` varchar(20) NOT NULL,
+  PRIMARY KEY (`customer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `orders` (
+  `order_id` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int NOT NULL,
+  `courier_id` int NOT NULL,
+  `final_price` float(10,2) NOT NULL,
+  `order_status` varchar(255) NOT NULL DEFAULT 'In Progress',
+  PRIMARY KEY (`order_id`),
+  KEY `customer_id` (`customer_id`),
+  KEY `courier_id` (`courier_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE,
+  CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`courier_id`) REFERENCES `couriers` (`courier_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
