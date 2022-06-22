@@ -198,5 +198,3 @@ def view_all_customers():
     close_connection_and_cursor(connection,cursor)
 
 
-
-customer_menu()
