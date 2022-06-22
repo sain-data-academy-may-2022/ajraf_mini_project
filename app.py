@@ -29,7 +29,7 @@ def main_menu():
                 case _:
                     main_menu()
     else:
-        main_menu()
+        sys.exit()
 
     
         
