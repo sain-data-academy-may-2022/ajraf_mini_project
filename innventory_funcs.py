@@ -160,4 +160,4 @@ def change_book_price():
     add_new_book_to_table(name,quantity,price)
 
 
-inventory_menu()
+
