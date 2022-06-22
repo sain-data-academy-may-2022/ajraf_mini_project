@@ -25,6 +25,8 @@ def main_menu():
                 take_order_menu()
             case 0:
                 sys.exit()
+            case _:
+                main_menu()
         
 if __name__ == "__main__":
     main_menu()
