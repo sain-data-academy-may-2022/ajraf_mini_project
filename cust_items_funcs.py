@@ -409,4 +409,3 @@ def view_all_orders():
     print_all_orders(result)
     close_connection_and_cursor(connection,cursor)
  
-take_order_menu()
