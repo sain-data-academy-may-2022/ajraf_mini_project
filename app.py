@@ -12,21 +12,26 @@ def main_menu():
     [4] Orders Menu \n
     [0] Exit
     """)
-    user_option = int(input("Enter a number: "))
-    while True:
-        match user_option:
-            case 1:
-                inventory_menu()
-            case 2:
-                customer_menu()
-            case 3: 
-                courier_menu()
-            case 4:
-                take_order_menu()
-            case 0:
-                sys.exit()
-            case _:
-                main_menu()
+    user_option = input("Enter a number: ")
+    if isinstance(user_option, int):
+        while True:
+            match user_option:
+                case 1:
+                    inventory_menu()
+                case 2:
+                    customer_menu()
+                case 3: 
+                    courier_menu()
+                case 4:
+                    take_order_menu()
+                case 0:
+                    sys.exit()
+                case _:
+                    main_menu()
+    else:
+        main_menu()
+
+    
         
 if __name__ == "__main__":
     main_menu()
