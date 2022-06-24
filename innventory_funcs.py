@@ -1,36 +1,7 @@
-
 from prettytable import PrettyTable
 import sys
 from database_functions import *
 
-def inventory_menu():
-    print("""This is the orders menu \n
-    [1] Add a new book \n
-    [2] Change book name\n
-    [3] Change book price \n
-    [4] Delete a book \n
-    [5] View all books \n
-    [0] Exit
-    """)
-    user_option = int(input("Enter a number: "))
-
-    match user_option:
-        case 1:
-            add_new_book()
-        case 2: 
-            # Change book name
-            change_book_name()
-        case 3:
-            # Change book price
-            change_book_price()
-        case 4:
-            # Delete a book
-            pass
-        case 5:
-            # View all books
-            view_all_books()
-        case 0:
-            sys.exit()
 #----------------------CHECK AGAINST bookS--------------------------
 def check_name_in_table(name):
     connection = establish_conection()
@@ -59,35 +30,52 @@ def add_new_book_to_table(name,quantity,price):
 
 def add_new_book():
     name = get_book_name()
-    quantity = get_book_quantity()
-    price = get_book_price()
+    if name is None:
+        print("Enter a valid name")
+        return  
     check = check_name_in_table(name)
     if check == 1:
         print("This item already exists")
-        inventory_menu()
-    else:
-        add_new_book_to_table(name,quantity,price)
+        return
+    quantity = get_book_quantity()
+    if quantity is None:
+        print("This is not valid. Returning you to menu")
+        return
+    price = get_book_price()
+    if price is None:
+        print("This is not valid. Returning you to menu")
+        return
+    add_new_book_to_table(name,quantity,price)
 
 def get_book_name():
     try:
         name = input("Enter a book name: ")
+        if name == "":
+            return None
+        return name
     except ValueError as e:
         print(e)
-    return name
+    
 
 def get_book_quantity():
+    quantity = input("Enter the quantity: ")
     try:
-        quantity = int(input("Enter the quantity: "))
+        quantity = int(quantity)
+        if quantity < 0:
+            return None
+        return quantity
     except ValueError as e:
-        print(e)
-    return quantity
+        return None
 
 def get_book_price():
+    price = input("Enter the price: ")
     try:
-        price = float(input("Enter the price: "))
+        price = float(price)
+        if price < 0:
+            return None
+        return price
     except ValueError as e:
-        print(e)
-    return price
+        return None
 
 # -------------------------------CHNAGE BOOK NAME--------------------------------------------
 def update_book_name_on_table(new_name, old_name):
@@ -113,7 +101,7 @@ def change_book_name():
 
 #---------------------------------------------------------------------------------------------
 def print_all_books(result):
-    t = PrettyTable(['Book id', 'Book Name', 'Quantity','Price','OOS'])
+    t = PrettyTable(['Book id', 'Book Name', 'Price','Quantity','OOS'])
     for x in result:
         t.add_row(x)
     print(t)
@@ -153,11 +141,28 @@ def update_old_oos_book(id,book):
 
 def change_book_price():
     book = get_book_name()
+    if book == None:
+        print("This is invalid")
+        return
     id_name_quantity = get_book_to_change(book)
     id,name,quantity = id_name_quantity
     price = get_book_price()
     update_old_oos_book(id,book)
     add_new_book_to_table(name,quantity,price)
 
+#---------------------DELETE BOOK-------------------------------------
+def delete_book_from_table(name):
+    connection = establish_conection()
+    cursor = connection.cursor()
+    sql = "DELETE FROM books WHERE book_name = %s"
+    val = (name)
+    cursor.execute(sql,val)
+    close_connection_and_cursor(connection,cursor)
 
-
+def delete_book(get_book_name):
+    name = get_book_name()
+    if name is None:
+        print("Enter a valid book name")
+        return 
+    delete_book_from_table(name)
+    
