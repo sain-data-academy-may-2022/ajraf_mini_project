@@ -4,6 +4,8 @@ import sys
 from customer_funcs import *
 from courier_funcs import get_random_courier
 
+#----------------------User Data------------------------------------
+
 def create_order(customer_id,courier_id):
     connection = establish_conection()
     cursor = connection.cursor()
@@ -15,32 +17,6 @@ def create_order(customer_id,courier_id):
     result = cursor.fetchone()
     close_connection_and_cursor(connection,cursor)
     return result[0]
-
-def take_order_menu():
-    print("""This is the orders menu \n
-    [1] Make new order \n
-    [2] Update order \n
-    [3] View all orders \n
-    [4] Complete an order \n
-    [0] Exit
-    """)
-    user_option = int(input("Enter a number: "))
-
-    match user_option:
-        case 1:
-            # Add a new order
-            make_new_order()
-        case 2: 
-            # Change order
-            update_order()
-        case 3:
-            # View all orders
-            view_all_orders()
-        case 4:
-            # Complete order
-            complete_order()
-        case 0:
-            sys.exit()
 
 #----------------------------------------GET DATA------------------------------------------------------------------
 def get_all_order_items(order_id):
@@ -293,12 +269,10 @@ def items_to_dict(items,order_id,locked_prices):
     my_prices = dict()
     for x in locked_prices:
         my_prices[x[0]] = x[1]
-    print(my_prices)
     my_dict = dict()
     for x in items:
         my_dict[x[0]] = x[1]
     print("This is your order")
-    print_order(my_dict)
     for k,v in my_dict.items():
         fixed_price = my_prices.get(k)
         print(f"Would you like to update the quantity of {k} priced at £{fixed_price}")
@@ -307,8 +281,8 @@ def items_to_dict(items,order_id,locked_prices):
             item = k
             quantity = int(v)
             v = int(input("Enter the value: "))
-            print(item,quantity)
-            print(k,v)
+            # print(item,quantity)
+            # print(k,v)
             add_to_inventory(item,quantity)
             add_updated_customer_items(order_id,k,v,fixed_price)
             remove_from_inventory(v,k)
@@ -317,7 +291,7 @@ def items_to_dict(items,order_id,locked_prices):
             v = int(v)
             quantity = v
             add_to_inventory(item,quantity)
-            add_updated_customer_items(order_id,k,v)
+            add_updated_customer_items(order_id,k,v,fixed_price)
             remove_from_inventory(quantity,item)
 
 def check_order_complete(order_id):
@@ -344,10 +318,18 @@ def update_order():
 
 #---------------------------------MAKE NEW ORDER------------------------------------------------------------------------
 def make_new_order():
-    name = input("Enter the customers name: ")
-    phone = input("Enter the customers phone: ")
+    name = get_customer_name()
+    if name == None:
+        print("This cannot be empty")
+        return
+    phone = get_customer_phone()
+    if phone == None:
+        print("This cannot be empty")
+        return
+    if len(phone) > 20:
+        print("This is too long")
+        return
     valid_customer = check_customer_exists(name,phone)
-    print(valid_customer)
     if valid_customer == 0:
         delete_incomplete_order()
         print("This customer does not exist")
@@ -383,8 +365,25 @@ def complete_order_in_table(a,order_id):
     cursor.execute(sql,val)
     close_connection_and_cursor(connection,cursor)
 
+def valid_order_id():
+    try:
+        id_num = input("Enter an order id: ")
+        if not id_num:
+            print("This cannot be empyty")
+            return None
+        elif id_num.isdigit() is False:
+            print("Phone number can only contain digits")
+            return None
+        else:
+            return id_num
+    except ValueError as e:
+        print(e)
+
 def complete_order():
-    order_id = int(input("Enter an order id: "))
+    order_id = valid_order_id()
+    if order_id == None:
+        print("You need to enter a number")
+        return
     a = calculate_absolute_total(order_id)
     complete_order_in_table(a,order_id)
     
