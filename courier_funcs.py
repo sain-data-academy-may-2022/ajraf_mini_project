@@ -1,50 +1,35 @@
 from prettytable import PrettyTable
 from database_functions import *
-import sys
 
-def courier_menu():
-    print("""This is the courier menu \n
-    [1] Add new courier \n
-    [2] Change courier name \n
-    [3] Change courier phone \n
-    [4] Delete a courier \n
-    [5] View all couriers \n
-    [0] Exit
-    """)
-    user_option = int(input("Enter a number: "))
-
-    match user_option:
-        case 1:
-            # Add a courier
-            add_new_courier()
-        case 2: 
-            # Change courier name
-            change_courier_name()
-        case 3:
-            # Change courier phone
-            change_courier_phone()
-        case 4:
-            # Delete a courier
-            delete_a_courier()
-        case 5:
-            view_all_couriers()
-        case 0:
-            sys.exit()
 #-------------------------------courier GET DATA---------------------------------------------
 
 def get_courier_name():
     try:
         name = input("Enter a name: ")
+        if not name:
+            print("This cannot be empyty")
+            return None
+        else:
+            return name
     except ValueError as e:
         print(e)
-    return name
 
 def get_courier_phone():
     try:
         phone = input("Enter a phone number: ")
+        if not phone:
+            print("This cannot be empyty")
+            return None
+        elif len(phone) > 20:
+            print("This number is too long")
+            return None
+        elif phone.isdigit() is False:
+            print("Phone number can only contain digits")
+            return None
+        else:
+            return phone
     except ValueError as e:
         print(e)
-    return phone
 
 def get_random_courier():
     connection = establish_conection()
@@ -95,11 +80,15 @@ def add_new_courier_to_table(name,phone,company):
 def add_new_courier():
     company = "Royal Mail"
     name = get_courier_name()
+    if name == None:
+        return
     phone = get_courier_phone()
+    if phone == None:
+        return
     check = check_if_courier_exists(name,phone)
     if check == 1:
         print("This user exists")
-        courier_menu()
+        return
     else:
         add_new_courier_to_table(name,phone,company)
         
