@@ -2,60 +2,77 @@ import sys
 from prettytable import PrettyTable
 from database_functions import *
 
-def customer_menu():
-    print("""This is the courier menu \n
-    [1] Add new customer \n
-    [2] Change customer name\n
-    [3] Change customer address \n
-    [4] Change customer phone \n
-    [5] Delete a customer \n
-    [6] View all customers \n
-    [0] Exit
-    """)
-    user_option = int(input("Enter a number: "))
 
-    match user_option:
-        case 1:
-            # Add a customer
-            add_new_customer()
-        case 2: 
-            # Change customer name
-            change_customer_name()
-        case 3:
-            # Change customer address
-            change_customer_address()
-        case 4:
-            # Change customer phone
-            change_customer_phone()  
-        case 5:
-            # Delete a customer
-            delete_a_customer()
-        case 6:
-            view_all_customers()
-        case 0:
-            sys.exit()
 #-------------------------------customer GET DATA---------------------------------------------
 
 def get_customer_name():
     try:
         name = input("Enter a name: ")
+        if not name:
+            print("This cannot be empty")
+            return None
+        else:
+            return name
     except ValueError as e:
-        print(e)
-    return name
+        print("This is invalid")
+
+def get_old_customer_name():
+    try:
+        name = input("Enter the name you want to change: ")
+        if not name:
+            print("This cannot be empty")
+            return None
+        else:
+            return name
+    except ValueError:
+        print("This is invalid")
 
 def get_customer_address():
     try:
         address = input("Enter an address: ")
-    except ValueError as e:
-        print(e)
-    return address
+        if not address:
+            print("This cannot be empyty")
+            return None
+        else:
+            return address
+    except ValueError:
+        print("This is invalid")
 
 def get_customer_phone():
     try:
         phone = input("Enter a phone number: ")
-    except ValueError as e:
-        print(e)
-    return phone
+        if not phone:
+            print("This cannot be empyty")
+            return None
+        elif len(phone) > 20:
+            print("This number is too long")
+            return None
+        elif phone.isdigit() is False:
+            print("Phone number can only contain digits")
+            return None
+        else:
+            return phone
+    except ValueError:
+
+        print("This is invalid")
+def get_old_customer_phone():
+    try:
+        phone = input("Enter the old phone number: ")
+        if not phone:
+            print("This cannot be empyty")
+            return None
+        elif len(phone) > 20:
+            print("This number is too long")
+            return None
+        elif phone.isdigit() is False:
+            print("Phone number can only contain digits")
+            return None
+        else:
+            return phone
+    except ValueError:
+        
+        print("This is invalid")
+
 
 #------------------------CHECK UID---------------------------------------------
 def check_customer_exists(name,phone):
@@ -81,12 +98,18 @@ def add_new_customer_to_table(name,address,phone):
 
 def add_new_customer():
     name = get_customer_name()
+    if name == None:
+        return
     address = get_customer_address()
+    if address == None:
+        return
     phone = get_customer_phone()
+    if phone == None:
+        return
     check = check_customer_exists(name,phone)
     if check == 1:
         print("This user exists")
-        customer_menu()
+        return
     else:
         add_new_customer_to_table(name,address,phone)
         
@@ -94,13 +117,19 @@ def add_new_customer():
 
 
 def change_customer_name():
-    old_name = input("Enter the old name: ")
+    old_name = get_old_customer_name()
+    if old_name == None:
+        print("Name cannot be empty")
+        return
     name = get_customer_name()
+    if name == None:
+        print("Name cannot be empty")
+        return
     print("Now enter the phone number belonging to the user")
     phone = get_customer_phone()
     connection = establish_conection()
     cursor = connection.cursor()
-    check = check_customer_exists(name,phone)
+    check = check_customer_exists(old_name,phone)
     if check == 1:
         sql = "UPDATE customers SET customer_name = %s WHERE customer_name = %s AND customer_phone = %s"
         val = (name,old_name, phone)
@@ -111,9 +140,18 @@ def change_customer_name():
 
 def change_customer_address():
     name = get_customer_name()
+    if name == None:
+        print("Name cannot be empty")
+        return
     print("Now enter the phone number belonging to the user")
     phone = get_customer_phone()
+    if phone == None:
+        print("Address cannot be empty")
+        return
     address = get_customer_address()
+    if address == None:
+        print("Phone cannot be empty")
+        return
     connection = establish_conection()
     cursor = connection.cursor()
     check = check_customer_exists(name,phone)
@@ -126,13 +164,22 @@ def change_customer_address():
     close_connection_and_cursor(connection,cursor)
 
 def change_customer_phone():
-    old_phone = input("Enter the old phone: ")
+    old_phone = get_old_customer_phone()
+    if old_phone == None:
+        print("This is invalid")
+        return
     phone = get_customer_phone()
+    if phone == None:
+        print("This is invalid")
+        return
     print("Now enter the users name associated with this number")
     name = get_customer_name()
+    if name == None:
+        print("This is invalid")
+        return
     connection = establish_conection()
     cursor = connection.cursor()
-    check = check_customer_exists(name,phone)
+    check = check_customer_exists(name,old_phone)
     if check == 1:
         sql = "UPDATE customers SET customer_phone = %s WHERE customer_name = %s AND customer_phone = %s"
         val = (phone, name, old_phone)
@@ -165,10 +212,15 @@ def delete_customer_from_table(name,phone):
 
 def delete_a_customer():
     name = get_customer_name()
+    if name == None:
+        print("Name cannot be empty")
+        return
     phone = get_customer_phone()
+    if phone == None:
+        print("Phone number cannot be empty")
+        return
     check = check_customer_exists(name,phone)
     if check == 1:
-        #cid = get_customer_id()
         delete_customer_from_table(name,phone)
 
 #-------------------------------GET DATA-----------------------------------------------------
@@ -196,5 +248,6 @@ def view_all_customers():
     result = cursor.fetchall()
     print_all_customers(result)
     close_connection_and_cursor(connection,cursor)
+
 
 
