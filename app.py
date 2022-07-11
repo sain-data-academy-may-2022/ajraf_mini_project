@@ -7,7 +7,7 @@ from innventory_funcs import *
 
 def courier_menu():
     while True:
-        print("""This is the courier menu \n
+        print("""This is the courier menu. \n
         [1] Add new courier \n
         [2] Change courier name \n
         [3] Change courier phone \n
