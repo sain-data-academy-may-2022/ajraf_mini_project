@@ -29,3 +29,11 @@ def random_with_N_digits(n):
     range_end = (10**n)-1
     return randint(range_start, range_end)
 
+from datetime import datetime
+
+def current_date_prefix():
+    date = datetime.today().strftime('%Y-%m-%d')
+    date = date[5:]
+    date = date.replace('-','/').replace('0',"")
+    date = (f'2022/{date}')
+    return date
